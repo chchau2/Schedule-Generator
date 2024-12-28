@@ -1,29 +1,16 @@
-<!--<!DOCTYPE html>
-<html lang="en"></html>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-with, initial-scale=1.0">
-    <title>Schedule Generator</title>
-    <style></style>
-</head>
-
-<body>
-    <h1>HI Point Montara Hostel</h1>
-</body>-->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dynamic Table with Right-Click Text Box</title>
+  <title>Schedule Generator</title>
   <style>
     table {
       border-collapse: collapse;
       width: 100%;
     }
     td {
-      border: 1px solid #ccc;
+      border: 1px solid #000000;
       padding: 10px;
       text-align: center;
       cursor: pointer;
@@ -56,10 +43,40 @@
             <th>Friday</th>
             <th>Saturday</th>
         </tr>
-        
+        <script>
+            // Get the current date
+            let currentDate = new Date();
+            
+            // Function to get the start of the current week (Sunday)
+            function getStartOfWeek(date) {
+                let day = date.getDay(),
+                    diff = date.getDate() - day; // Get the difference from Sunday
+                return new Date(date.setDate(diff));
+            }
+            
+            // Get the start of the current week (Sunday)
+            let startOfWeek = getStartOfWeek(new Date(currentDate));
+            
+            // Define day names and the corresponding date numbers
+            const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+            const tableHeaders = document.querySelectorAll("#toggleTable th");
+            
+            // Loop through the days of the week and set day names + date in the headers
+            tableHeaders.forEach((th, index) => {
+                if (index > 0) { // Skip the first header (empty cell)
+                    let dayOffset = index - 1; // Index 1 corresponds to Sunday, 2 to Monday, etc.
+                    let dayDate = new Date(startOfWeek);
+                    dayDate.setDate(startOfWeek.getDate() + dayOffset); // Calculate the date for the current day
+                    
+                    // Create a variable with day name and date
+                    let dayHeader = `${dayNames[index - 1]} ${dayDate.getDate()}`;
+                    
+                    // Update the <th> with the generated variable
+                    th.textContent = dayHeader; // Insert the variable content into the <th>
+                }
+            });
+        </script>
     </table>
-
-
     <script>
     // Generate the table dynamically
     const table = document.getElementById("toggleTable");
