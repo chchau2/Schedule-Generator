@@ -31,6 +31,27 @@
   </style>
 </head>
 <body>
+    <table id="staffTable" border="1">
+        <tr>
+            <th style="color: white; background-color: #431843">Chris</th>
+            <th style="color: black; background-color: #74cb60">Janice</th>
+            <th style="color: black; background-color: #9dc4de">Natalie</th>
+            <th style="color: black; background-color: #e3863a">Meg</th>
+            <th style="color: black; background-color: #cb9fd3">Christine</th>
+            <th style="color: white; background-color: #bb2222">Abraham</th>
+            <th style="color: white; background-color: #28356c">Vicki</th>
+            <th style="color: black; background-color: #f3f361">HK</th>
+        </tr>
+    </table>
+    <script>
+        const row = table.insertRow(); // Create a new row
+        for(let i = 0; i < 8; i++) {
+            const newCell = row.insertCell(0);
+        }
+    </script>
+
+
+
 <h1>Week 1</h1>
     <table id="toggleTable" border="1">
         <tr>
@@ -98,16 +119,27 @@
             if (i == 4 && j == 0) newCell.textContent = 'NOTES:';
             if (i == 5 && j == 0) newCell.textContent = 'Janice';
             if (i == 6 && j == 0) newCell.textContent = 'Chris';
-            // Add an event listener for the click event
-            cell.addEventListener("click", () => {
-                // Toggle cell background color on click
-                if (cell.style.backgroundColor === "lightblue") {
-                cell.style.backgroundColor = ""; // Reset to default
-                } else {
-                cell.style.backgroundColor = "lightblue"; // Set to light blue
-                }
-            });
+            if(i < 4){
+                // Add an event listener for the click event
+                cell.addEventListener("click", () => {
+                    // Toggle cell background color on click
+                    if (cell.style.backgroundColor === "lightblue") {
+                    cell.style.backgroundColor = ""; // Reset to default
+                    } else {
+                    cell.style.backgroundColor = "lightblue"; // Set to light blue
+                    }
+                });
+            }
+            else{
+                cell.onclick = function(){
+                    makeCellEditable(this);
+                };
+            }
         }
+    }
+    function makeCellEditable(cell)
+    {
+        if(!cell.isEditable){ cell.contentEditable = true; }      
     }
   </script>
 </body>
