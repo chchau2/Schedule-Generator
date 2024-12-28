@@ -16,7 +16,7 @@
       cursor: pointer;
       position: relative; /* For positioning the text box */
     }
-    /* might not need this/not sure what it does so garabage
+    /* might not need this/not sure what it does so garabage [We shoudl probably go over the head stuff later on]
     .text-box {
       position: absolute;
       top: 50%;
@@ -47,20 +47,7 @@
             <th class='color-cell' style="color: black; background-color: white">CLEAR</th>
         </tr>
     </table>
-    <script>
-        /*
-        const row = table.insertRow(); // Create a new row
-        for(let i = 0; i < 8; i++) {
-            const newCell = row.insertCell(0);
-        }
-            */
-
-            
-    </script>
-
-
-
-<h1>Week 1</h1>
+    <h1>Week 1</h1>
     <table id="toggleTable" border="1">
         <tr>
             <th></th>
@@ -72,62 +59,63 @@
             <th>Friday</th>
             <th>Saturday</th>
         </tr>
-        <script>
-            // Get the current date
-            let currentDate = new Date();
-            
-            // Function to get the start of the current week (Sunday)
-            function getStartOfWeek(date) {
-                let day = date.getDay(),
-                    diff = date.getDate() - day; // Get the difference from Sunday
-                return new Date(date.setDate(diff));
-            }
-            
-            // Get the start of the current week (Sunday)
-            let startOfWeek = getStartOfWeek(new Date(currentDate));
-            
-            // Define day names and the corresponding date numbers
-            const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-            const tableHeaders = document.querySelectorAll("#toggleTable th");
-            
-            // Loop through the days of the week and set day names + date in the headers
-            tableHeaders.forEach((th, index) => {
-                if (index > 0) { // Skip the first header (empty cell)
-                    let dayOffset = index - 1; // Index 1 corresponds to Sunday, 2 to Monday, etc.
-                    let dayDate = new Date(startOfWeek);
-                    dayDate.setDate(startOfWeek.getDate() + dayOffset); // Calculate the date for the current day
-                    
-                    // Create a variable with day name and date
-                    let dayHeader = `${dayNames[index - 1]} ${dayDate.getDate()}`;
-                    
-                    // Update the <th> with the generated variable
-                    th.textContent = dayHeader; // Insert the variable content into the <th>
-                }
-            });
-        </script>
     </table>
     <script>
-    // Generate the table dynamically
+        //This assigns the days with their respective numbers
+        // Get the current date
+        let currentDate = new Date();
+        
+        // Function to get the start of the current week (Sunday)
+        function getStartOfWeek(date) {
+            let day = date.getDay(),
+                diff = date.getDate() - day; // Get the difference from Sunday
+            return new Date(date.setDate(diff));
+        }
+        
+        // Get the start of the current week (Sunday)
+        let startOfWeek = getStartOfWeek(new Date(currentDate));
+        
+        // Define day names and the corresponding date numbers
+        const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        const tableHeaders = document.querySelectorAll("#toggleTable th");
+        
+        // Loop through the days of the week and set day names + date in the headers
+        // forEach is an array method which helps iterate over the elements th (table headers) with index starting at 0
+        tableHeaders.forEach((th, index) => {
+            if (index > 0) { // Skip the first header (empty cell)
+                let dayOffset = index - 1; // Index 1 corresponds to Sunday, 2 to Monday, etc.
+                let dayDate = new Date(startOfWeek);
+                dayDate.setDate(startOfWeek.getDate() + dayOffset); // Calculate the date for the current day
+                
+                // Create a variable with day name and date
+                let dayHeader = `${dayNames[index - 1]} ${dayDate.getDate()}`;
+                
+                // Update the <th> with the generated variable
+                th.textContent = dayHeader; // Insert the variable content into the <th>
+            }
+        });
+
+    // Generate the table dynamically, meaning we dynamically make the table with cells
     const table = document.getElementById("toggleTable");
     const rows = 7; // Number of rows
-    const cols = 7; // Number of columns (14 * 14 = 196 cells)
+    const cols = 8; // Number of columns (14 * 14 = 196 cells)
 
    
-    for (let i = 0; i < rows; i++) 
-    {
+    for (let i = 0; i < rows; i++) {
         const row = table.insertRow(); // Create a new row
-        row.classList.add('empty-cell');
-        const newCell = row.insertCell(0);
+        //row.classList.add('empty-cell');
         for (let j = 0; j < cols; j++) 
         {
-            const cell = row.insertCell(); // Create a new cell
-            if (i == 0 && j == 0) newCell.textContent = '9am - 5pm';
-            if (i == 1 && j == 0) newCell.textContent = 'HK';
-            if (i == 2 && j == 0) newCell.textContent = '1pm - 9pm';
-            if (i == 3 && j == 0) newCell.textContent = 'MID Shift';
-            if (i == 4 && j == 0) newCell.textContent = 'NOTES:';
-            if (i == 5 && j == 0) newCell.textContent = 'Janice';
-            if (i == 6 && j == 0) newCell.textContent = 'Chris';
+            const cell = row.insertCell();
+            //const cell = row.insertCell(); // Create a new cell
+            if (i == 0 && j == 0) cell.textContent = '9am - 5pm';
+            if (i == 1 && j == 0) cell.textContent = 'HK';
+            if (i == 2 && j == 0) cell.textContent = '1pm - 9pm';
+            if (i == 3 && j == 0) cell.textContent = 'MID Shift';
+            if (i == 4 && j == 0) cell.textContent = 'NOTES:';
+            if (i == 5 && j == 0) cell.textContent = 'Janice';
+            if (i == 6 && j == 0) cell.textContent = 'Chris';
+            cell.classList.add('empty-cell');
             /*
             if(i < 4){
                 // Add an event listener for the click event
