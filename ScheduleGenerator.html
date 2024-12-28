@@ -1,8 +1,97 @@
-public class ScheduleGenerator{
+<!--<!DOCTYPE html>
+<html lang="en"></html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-with, initial-scale=1.0">
+    <title>Schedule Generator</title>
+    <style></style>
+</head>
 
-    public static void main(String[] args) {
-        System.out.println("Hello World");
+<body>
+    <h1>HI Point Montara Hostel</h1>
+</body>-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dynamic Table with Right-Click Text Box</title>
+  <style>
+    table {
+      border-collapse: collapse;
+      width: 100%;
     }
-    
-}
+    td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: center;
+      cursor: pointer;
+      position: relative; /* For positioning the text box */
+    }
+    .text-box {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      display: none;
+      width: 80%;
+    }
+    .text-box input {
+      width: 100%;
+      padding: 5px;
+    }
+  </style>
+</head>
+<body>
+<h1>Week 1</h1>
+    <table id="toggleTable" border="1">
+        <tr>
+            <th></th>
+            <th>Sunday</th>
+            <th>Monday</th>
+            <th>Tuesday</th>
+            <th>Wednesday</th>
+            <th>Thursday</th>
+            <th>Friday</th>
+            <th>Saturday</th>
+        </tr>
+        
+    </table>
 
+
+    <script>
+    // Generate the table dynamically
+    const table = document.getElementById("toggleTable");
+    const rows = 7; // Number of rows
+    const cols = 7; // Number of columns (14 * 14 = 196 cells)
+
+   
+    for (let i = 0; i < rows; i++) 
+    {
+        const row = table.insertRow(); // Create a new row
+        const newCell = row.insertCell(0);
+        for (let j = 0; j < cols; j++) 
+        {
+            const cell = row.insertCell(); // Create a new cell
+            if (i == 0 && j == 0) newCell.textContent = '9am - 5pm';
+            if (i == 1 && j == 0) newCell.textContent = 'HK';
+            if (i == 2 && j == 0) newCell.textContent = '1pm - 9pm';
+            if (i == 3 && j == 0) newCell.textContent = 'MID Shift';
+            if (i == 4 && j == 0) newCell.textContent = 'NOTES:';
+            if (i == 5 && j == 0) newCell.textContent = 'Janice';
+            if (i == 6 && j == 0) newCell.textContent = 'Chris';
+            // Add an event listener for the click event
+            cell.addEventListener("click", () => {
+                // Toggle cell background color on click
+                if (cell.style.backgroundColor === "lightblue") {
+                cell.style.backgroundColor = ""; // Reset to default
+                } else {
+                cell.style.backgroundColor = "lightblue"; // Set to light blue
+                }
+            });
+        }
+    }
+  </script>
+</body>
+</html>
