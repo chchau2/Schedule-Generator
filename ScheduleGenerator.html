@@ -115,12 +115,22 @@
             if (i == 4 && j == 0) cell.textContent = 'NOTES:';
             if (i == 5 && j == 0) cell.textContent = 'Janice';
             if (i == 6 && j == 0) cell.textContent = 'Chris';
-            cell.classList.add('empty-cell');
+            if ((i == 0 || i == 2 || i == 3) && j != 0) cell.classList.add('empty-cell');
+            if (i == 1) cell.addEventListener("click", () => {
+                    cell.style.backgroundColor = "yellow"; // for Hk, but might not need if they can select the colors above
+                });
+            if (i > 3) {
+                cell.onclick = function(){
+                    makeCellEditable(this);
+                };
+            } else {
+                cell.addEventListener("dblclick", function(){
+                    makeCellEditable(this);
+                });
+            }
+                
             /*
             if(i < 4){
-                // Add an event listener for the click event
-
-                
                 cell.addEventListener("click", () => {
                     // Toggle cell background color on click
                     if (cell.style.backgroundColor === "lightblue") {
@@ -139,11 +149,10 @@
         } 
     
     } 
-    /*
-    function makeCellEditable(cell)
-    {
+    
+    function makeCellEditable(cell) {
         if(!cell.isEditable){ cell.contentEditable = true; }      
-    }*/
+    }
 
     let selectedColor = null;
         // Event listener for static color table
@@ -166,7 +175,6 @@
             cell.style.backgroundColor = selectedColor; // Apply selected color to the cell
         }
     });
-        
   </script>
 </body>
 </html>
