@@ -58,6 +58,8 @@
             <th class='color-cell' style="color: black; background-color: white">CLEAR</th>
         </tr>
     </table>
+
+
     <h1>Week 1</h1>
     <table id="toggleTable" border="1">
         <tr>
@@ -128,7 +130,13 @@
             if (i == 6 && j == 0) cell.textContent = 'Chris';
             if ((i == 0 || i == 2 || i == 3) && j != 0) cell.classList.add('empty-cell');
             if (i == 1) cell.addEventListener("click", () => {
+                //makes clicking to add notes a bit weird, works but weird... but want to fix
+                if (cell.style.backgroundColor == "yellow") {
+                    cell.style.backgroundColor = "";
+                } else {
                     cell.style.backgroundColor = "yellow"; // for Hk, but might not need if they can select the colors above
+                }
+                    
                 });
             if (i > 3) {
                 cell.onclick = function(){
