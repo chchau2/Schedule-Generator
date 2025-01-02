@@ -111,6 +111,9 @@ function populateScheduleTable(schedule) {
   
     checkColor(dayShiftCell);
     checkColor(nightShiftCell);
+
+    dayShiftCell.textContent = null; // Get rid of names before displaying
+    nightShiftCell.textContent = null; // Get rid of names before displaying
   });
 
 }
