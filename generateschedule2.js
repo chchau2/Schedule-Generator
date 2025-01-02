@@ -6,20 +6,6 @@ const staffColors = {
   Abraham: '#bb2222',
 };
 
-// Fetch staff availability from input fields
-const staffAvailability = {
-  Natalie: parseDaysOff("natalieHours"),
-  Meg: parseDaysOff("megHours"),
-  Christine: parseDaysOff("christineHours"),
-  Abraham: parseDaysOff("abrahamHours"),
-};
-
-// Parse days off from input
-function parseDaysOff(inputId) {
-  const input = document.getElementById(inputId).value.trim();
-  return new Set(input.split(" ").map(Number)); // Convert to a Set of day numbers
-}
-
 // Staff constraints
 const staffRules = {
   Natalie: { requiredDays: 5, maxDays: 5, maxShiftsPerDay: 1 },
@@ -40,12 +26,32 @@ function shuffleArray(array) {
   }
 }
 
+// Parse days off from input
+function parseDaysOff(inputId) {
+  const input = document.getElementById(inputId).value.trim();
+  return new Set(input.split(" ").map(Number)); // Convert to a Set of day numbers
+}
+
 // Generate the schedule
 function generateSchedule() {
+
+  // Calculate today's offset
+  const today = new Date();
+  const offset = today.getDay(); 
+
+
+  // Fetch staff availability from input fields
+  const staffAvailability = {
+    Natalie: parseDaysOff("natalieHours"),
+    Meg: parseDaysOff("megHours"),
+    Christine: parseDaysOff("christineHours"),
+    Abraham: parseDaysOff("abrahamHours"),
+  };
+
   let schedule;
   while(true){
     let isValid = true;
-    schedule = Array(7).fill(null).map(() => ({ day: [], night: [] }));
+    schedule = Array(7).fill(null).map(() => ({ day: [], night: [] ,date:[]}));
 
     // Helper to check if a day is a weekend
     const isWeekend = (dayIndex) => dayIndex % 7 === 0 || dayIndex % 7 === 6;
@@ -64,7 +70,8 @@ function generateSchedule() {
         if (rules.maxDays && assignedDays >= rules.maxDays) continue;
 
         // Skip staff member if unavailable for the day
-        if (staffAvailability[staffName].has(dayIndex + 1)) continue;
+        const availabilityIndex = (dayIndex + offset) % 7; // Wrap around the week
+        if (staffAvailability[staffName].has(availabilityIndex + 1)) continue;
 
         let possibleShifts = ["day", "night"];
         if (rules.shiftPreferences) {
