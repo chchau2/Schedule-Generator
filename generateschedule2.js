@@ -1,3 +1,11 @@
+// Staff names and their respective colors
+const staffColors = {
+  Natalie: '#9dc4de',
+  Meg: '#e3863a',
+  Christine: '#cb9fd3',
+  Abraham: '#bb2222',
+};
+
 // Fetch staff availability from input fields
 const staffAvailability = {
   Natalie: parseDaysOff("natalieHours"),
@@ -14,8 +22,8 @@ function parseDaysOff(inputId) {
 
 // Staff constraints
 const staffRules = {
-  Natalie: { requiredDays: 5, maxShiftsPerDay: 1 },
-  Meg: { requiredDays: 5, maxShiftsPerDay: 1 },
+  Natalie: { requiredDays: 5, maxDays: 5, maxShiftsPerDay: 1 },
+  Meg: { requiredDays: 5, maxDays: 5, maxShiftsPerDay: 1 },
   Christine: { minDays: 1, maxDays: 2, maxShiftsPerDay: 1 },
   Abraham: { 
     minDays: 1, 
@@ -34,28 +42,33 @@ function shuffleArray(array) {
 
 // Generate the schedule
 function generateSchedule() {
-  const schedule = Array(14).fill(null).map(() => ({ day: [], night: [] }));
+  const schedule = Array(7).fill(null).map(() => ({ day: [], night: [] }));
 
   // Helper to check if a day is a weekend
   const isWeekend = (dayIndex) => dayIndex % 7 === 0 || dayIndex % 7 === 6;
 
-  // Shuffle staff names before starting the schedule
-  const staffNames = Object.keys(staffRules);
-  shuffleArray(staffNames);  // Shuffle staff
-
   // Assign shifts for each day
   schedule.forEach((daySchedule, dayIndex) => {
-    shuffleArray(staffNames);  // Shuffle staff
+    // Shuffle staff names each day to randomize the order
+    const staffNames = Object.keys(staffRules);
+    shuffleArray(staffNames); // Shuffle staff for the current day
+
     for (const staffName of staffNames) { // Loop through shuffled staff names
       const rules = staffRules[staffName]; // Access staff rules by name
-      if (rules.maxDays && rules.maxDays <= getAssignedDays(staffName, schedule)) continue;
-      if (staffAvailability[staffName].has(dayIndex + 1)) continue; // Skip if not available
+
+      // Check if staff member has already been assigned their maxDays
+      const assignedDays = getAssignedDays(staffName, schedule);
+      if (rules.maxDays && assignedDays >= rules.maxDays) continue;
+
+      // Skip staff member if unavailable for the day
+      if (staffAvailability[staffName].has(dayIndex + 1)) continue;
 
       let possibleShifts = ["day", "night"];
       if (rules.shiftPreferences) {
         possibleShifts = rules.shiftPreferences(dayIndex, isWeekend(dayIndex));
       }
 
+      // Assign shift if there's room
       for (const shift of possibleShifts) {
         if (daySchedule[shift].length < 1) { // Only one person per shift
           daySchedule[shift].push(staffName);
@@ -63,6 +76,7 @@ function generateSchedule() {
         }
       }
     }
+
   });
 
   return schedule;
@@ -71,9 +85,12 @@ function generateSchedule() {
 // Count assigned days
 function getAssignedDays(staffName, schedule) {
   return schedule.reduce((count, daySchedule) => 
-    count + (daySchedule.day.includes(staffName) || daySchedule.night.includes(staffName)), 0
+    count + (daySchedule.day.includes(staffName) + daySchedule.night.includes(staffName)), 0
   );
 }
+
+
+
 
 // Populate table with schedule
 function populateScheduleTable(schedule) {
@@ -87,11 +104,26 @@ function populateScheduleTable(schedule) {
 
     dayShiftCell.textContent = daySchedule.day.join(", "); // Fill day shift for the day
     nightShiftCell.textContent = daySchedule.night.join(", "); // Fill night shift for the day
+  
+    checkColor(dayShiftCell);
+    checkColor(nightShiftCell);
   });
+
+}
+
+function checkColor(cell)
+{
+  const staffName = cell.textContent.trim();  // Get the staff name from the cell text
+  const color = staffColors[staffName] || 'white';// Default to white if no color is defined
+  if (cell.textContent === staffName) {
+    // Change the cell's background color
+    cell.style.backgroundColor = color;
+  }
 }
 
 // Trigger schedule generation
 document.getElementById("generateScheduleButton").addEventListener("click", () => {
   const schedule = generateSchedule();
   populateScheduleTable(schedule);
+
 });
