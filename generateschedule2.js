@@ -89,9 +89,6 @@ function getAssignedDays(staffName, schedule) {
   );
 }
 
-
-
-
 // Populate table with schedule
 function populateScheduleTable(schedule) {
   const table = document.getElementById("toggleTable");
