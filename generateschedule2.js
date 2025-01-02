@@ -1,3 +1,11 @@
+// Staff names and their respective colors
+const staffColors = {
+  Natalie: '#9dc4de',
+  Meg: '#e3863a',
+  Christine: '#cb9fd3',
+  Abraham: '#bb2222',
+};
+
 // Fetch staff availability from input fields
 const staffAvailability = {
   Natalie: parseDaysOff("natalieHours"),
@@ -75,6 +83,7 @@ function getAssignedDays(staffName, schedule) {
   );
 }
 
+
 // Populate table with schedule
 function populateScheduleTable(schedule) {
   const table = document.getElementById("toggleTable");
@@ -87,11 +96,26 @@ function populateScheduleTable(schedule) {
 
     dayShiftCell.textContent = daySchedule.day.join(", "); // Fill day shift for the day
     nightShiftCell.textContent = daySchedule.night.join(", "); // Fill night shift for the day
+  
+    checkColor(dayShiftCell);
+    checkColor(nightShiftCell);
   });
+
+}
+
+function checkColor(cell)
+{
+  const staffName = cell.textContent.trim();  // Get the staff name from the cell text
+  const color = staffColors[staffName] || 'white';// Default to white if no color is defined
+  if (cell.textContent === staffName) {
+    // Change the cell's background color
+    cell.style.backgroundColor = color;
+  }
 }
 
 // Trigger schedule generation
 document.getElementById("generateScheduleButton").addEventListener("click", () => {
   const schedule = generateSchedule();
   populateScheduleTable(schedule);
+
 });
