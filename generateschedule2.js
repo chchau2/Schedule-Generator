@@ -42,43 +42,50 @@ function shuffleArray(array) {
 
 // Generate the schedule
 function generateSchedule() {
-  const schedule = Array(7).fill(null).map(() => ({ day: [], night: [] }));
+  let schedule;
+  while(true){
+    let isValid = true;
+    schedule = Array(7).fill(null).map(() => ({ day: [], night: [] }));
 
-  // Helper to check if a day is a weekend
-  const isWeekend = (dayIndex) => dayIndex % 7 === 0 || dayIndex % 7 === 6;
+    // Helper to check if a day is a weekend
+    const isWeekend = (dayIndex) => dayIndex % 7 === 0 || dayIndex % 7 === 6;
 
-  // Assign shifts for each day
-  schedule.forEach((daySchedule, dayIndex) => {
-    // Shuffle staff names each day to randomize the order
-    const staffNames = Object.keys(staffRules);
-    shuffleArray(staffNames); // Shuffle staff for the current day
+    // Assign shifts for each day
+    schedule.forEach((daySchedule, dayIndex) => {
+      // Shuffle staff names each day to randomize the order
+      const staffNames = Object.keys(staffRules);
+      shuffleArray(staffNames); // Shuffle staff for the current day
 
-    for (const staffName of staffNames) { // Loop through shuffled staff names
-      const rules = staffRules[staffName]; // Access staff rules by name
+      for (const staffName of staffNames) { // Loop through shuffled staff names
+        const rules = staffRules[staffName]; // Access staff rules by name
 
-      // Check if staff member has already been assigned their maxDays
-      const assignedDays = getAssignedDays(staffName, schedule);
-      if (rules.maxDays && assignedDays >= rules.maxDays) continue;
+        // Check if staff member has already been assigned their maxDays
+        const assignedDays = getAssignedDays(staffName, schedule);
+        if (rules.maxDays && assignedDays >= rules.maxDays) continue;
 
-      // Skip staff member if unavailable for the day
-      if (staffAvailability[staffName].has(dayIndex + 1)) continue;
+        // Skip staff member if unavailable for the day
+        if (staffAvailability[staffName].has(dayIndex + 1)) continue;
 
-      let possibleShifts = ["day", "night"];
-      if (rules.shiftPreferences) {
-        possibleShifts = rules.shiftPreferences(dayIndex, isWeekend(dayIndex));
-      }
+        let possibleShifts = ["day", "night"];
+        if (rules.shiftPreferences) {
+          possibleShifts = rules.shiftPreferences(dayIndex, isWeekend(dayIndex));
+        }
 
-      // Assign shift if there's room
-      for (const shift of possibleShifts) {
-        if (daySchedule[shift].length < 1) { // Only one person per shift
-          daySchedule[shift].push(staffName);
-          break;
+        // Assign shift if there's room
+        for (const shift of possibleShifts) {
+          if (daySchedule[shift].length < 1) { // Only one person per shift
+            daySchedule[shift].push(staffName);
+            break;
+          }
         }
       }
-    }
-
-  });
-
+      // Check if all shifts are filled for the day
+      if (daySchedule.day.length === 0 || daySchedule.night.length === 0) {
+        isValid = false; // Mark as invalid schedule
+      }
+    });
+    if(isValid) break;
+  }
   return schedule;
 }
 
