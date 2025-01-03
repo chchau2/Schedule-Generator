@@ -104,8 +104,8 @@ function getAssignedDays(staffName, schedule) {
 }
 
 // Populate table with schedule
-function populateScheduleTable(schedule) {
-  const table = document.getElementById("toggleTable");
+function populateScheduleTable(schedule, tableName) {
+  const table = document.getElementById(tableName);
 
   // Iterate over each day (index represents the day)
   schedule.forEach((daySchedule, dayIndex) => {
@@ -137,7 +137,9 @@ function checkColor(cell)
 
 // Trigger schedule generation
 document.getElementById("generateScheduleButton").addEventListener("click", () => {
-  const schedule = generateSchedule();
-  populateScheduleTable(schedule);
-
+  //const schedule = generateSchedule();
+  populateScheduleTable(generateSchedule(), "week1");
+  populateScheduleTable(generateSchedule(), "week2");
+  populateScheduleTable(generateSchedule(), "week3");
+  populateScheduleTable(generateSchedule(), "week4");
 });

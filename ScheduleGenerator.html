@@ -42,9 +42,9 @@
     <input id="christineHours" placeholder="Christine days off">
     <input id="abrahamHours" placeholder="Abraham days off">
     <input id="vickiHours" placeholder="Vicki days off">
-    <!-- <input id="monthButton" placeholder="Month in number">         month button work on later -->
+    <input id="monthButton" placeholder="Month in number">         
     <button id="generateScheduleButton"> Generate Schedule </button>
-    <script src="generateschedule.js"></script>
+    
     <table id="staffTable" border="1">
         <tr>
             <th class='color-cell' style="color: white; background-color: #431843">Chris</th>
@@ -58,10 +58,8 @@
             <th class='color-cell' style="color: black; background-color: white">CLEAR</th>
         </tr>
     </table>
-
-
     <h1>Week 1</h1>
-    <table id="toggleTable" border="1">
+    <table id="week1" border="1">
         <tr>
             <th></th>
             <th>Sunday</th>
@@ -73,24 +71,63 @@
             <th>Saturday</th>
         </tr>
     </table>
+    <h1>Week 2</h1>
+    <table id="week2" border="1">
+        <tr>
+            <th></th>
+            <th>Sunday</th>
+            <th>Monday</th>
+            <th>Tuesday</th>
+            <th>Wednesday</th>
+            <th>Thursday</th>
+            <th>Friday</th>
+            <th>Saturday</th>
+        </tr>
+    </table>
+    <h1>Week 3</h1>
+    <table id="week3" border="1">
+        <tr>
+            <th></th>
+            <th>Sunday</th>
+            <th>Monday</th>
+            <th>Tuesday</th>
+            <th>Wednesday</th>
+            <th>Thursday</th>
+            <th>Friday</th>
+            <th>Saturday</th>
+        </tr>
+    </table> 
+    <h1>Week 4</h1>
+    <table id="week4" border="1">
+        <tr>
+            <th></th>
+            <th>Sunday</th>
+            <th>Monday</th>
+            <th>Tuesday</th>
+            <th>Wednesday</th>
+            <th>Thursday</th>
+            <th>Friday</th>
+            <th>Saturday</th>
+        </tr>
+    </table>
+    <script src="generateschedule2.js"></script>
     <script>
-        //This assigns the days with their respective numbers
-        // Get the current date
-        let currentDate = new Date();
+        function makeTable(tableName){ //add a date parameter
+            let currentDate = new Date();
         
-        // Function to get the start of the current week (Sunday)
-        function getStartOfWeek(date) {
-            let day = date.getDay(),
-                diff = date.getDate() - day; // Get the difference from Sunday
-            return new Date(date.setDate(diff));
-        }
+            // Function to get the start of the current week (Sunday)
+            function getStartOfWeek(date) {
+                let day = date.getDay(),
+                    diff = date.getDate() - day; // Get the difference from Sunday
+                return new Date(date.setDate(diff));
+            }
         
         // Get the start of the current week (Sunday)
         let startOfWeek = getStartOfWeek(new Date(currentDate));
         
         // Define day names and the corresponding date numbers
         const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-        const tableHeaders = document.querySelectorAll("#toggleTable th");
+        const tableHeaders = document.querySelectorAll(`#${tableName} th`);
         
         // Loop through the days of the week and set day names + date in the headers
         // forEach is an array method which helps iterate over the elements th (table headers) with index starting at 0
@@ -108,92 +145,77 @@
             }
         });
 
-    // Generate the table dynamically, meaning we dynamically make the table with cells
-    const table = document.getElementById("toggleTable");
-    const rows = 7; // Number of rows
-    const cols = 8; // Number of columns (14 * 14 = 196 cells)
+        // Generate the table dynamically, meaning we dynamically make the table with cells
+        const table = document.getElementById(tableName);
+        const rows = 7; // Number of rows
+        const cols = 8; // Number of columns (14 * 14 = 196 cells)
 
-   
-    for (let i = 0; i < rows; i++) {
-        const row = table.insertRow(); // Create a new row
-        //row.classList.add('empty-cell');
-        for (let j = 0; j < cols; j++) 
-        {
-            const cell = row.insertCell();
-            //const cell = row.insertCell(); // Create a new cell
-            if (i == 0 && j == 0) cell.textContent = '9am - 5pm';
-            if (i == 1 && j == 0) cell.textContent = 'HK';
-            if (i == 2 && j == 0) cell.textContent = '1pm - 9pm';
-            if (i == 3 && j == 0) cell.textContent = 'MID Shift';
-            if (i == 4 && j == 0) cell.textContent = 'NOTES:';
-            if (i == 5 && j == 0) cell.textContent = 'Janice';
-            if (i == 6 && j == 0) cell.textContent = 'Chris';
-            if ((i == 0 || i == 2 || i == 3) && j != 0) cell.classList.add('empty-cell');
-            if (i == 1) cell.addEventListener("click", () => {
-                //makes clicking to add notes a bit weird, works but weird... but want to fix
-                if (cell.style.backgroundColor == "yellow") {
-                    cell.style.backgroundColor = "";
-                } else {
-                    cell.style.backgroundColor = "yellow"; // for Hk, but might not need if they can select the colors above
-                }
-                    
-                });
-            if (i > 3) {
-                cell.onclick = function(){
-                    makeCellEditable(this);
-                };
-            } else {
-                cell.addEventListener("dblclick", function(){
-                    makeCellEditable(this);
-                });
-            }
-                
-            /* this is probably not needed just keeping it as an example for future use
-            if(i < 4){
-                cell.addEventListener("click", () => {
-                    // Toggle cell background color on click
-                    if (cell.style.backgroundColor === "lightblue") {
-                    cell.style.backgroundColor = ""; // Reset to default
+    
+        for (let i = 0; i < rows; i++) {
+            const row = table.insertRow(); // Create a new row
+            //row.classList.add('empty-cell');
+            for (let j = 0; j < cols; j++) {
+                const cell = row.insertCell();
+                //const cell = row.insertCell(); // Create a new cell
+                if (i == 0 && j == 0) cell.textContent = '9am - 5pm';
+                if (i == 1 && j == 0) cell.textContent = 'HK';
+                if (i == 2 && j == 0) cell.textContent = '1pm - 9pm';
+                if (i == 3 && j == 0) cell.textContent = 'MID Shift';
+                if (i == 4 && j == 0) cell.textContent = 'NOTES:';
+                if (i == 5 && j == 0) cell.textContent = 'Janice';
+                if (i == 6 && j == 0) cell.textContent = 'Chris';
+                if ((i == 0 || i == 2 || i == 3) && j != 0) cell.classList.add('empty-cell');
+                if (i == 1) cell.addEventListener("click", () => {
+                    //makes clicking to add notes a bit weird, works but weird... but want to fix
+                    if (cell.style.backgroundColor == "yellow") {
+                        cell.style.backgroundColor = "";
                     } else {
-                    cell.style.backgroundColor = "lightblue"; // Set to light blue
-                    }
+                        cell.style.backgroundColor = "yellow"; // for Hk, but might not need if they can select the colors above
+                    }   
                 });
-                
-            }
-            else{
-                cell.onclick = function(){
-                    makeCellEditable(this);
-                };
-            }*/
+                if (i > 3) {
+                    cell.onclick = function(){
+                        makeCellEditable(this);
+                    };
+                } else {
+                    cell.addEventListener("dblclick", function(){
+                        makeCellEditable(this);
+                    });
+                }
+            } 
         } 
-    
-    } 
-    
-    function makeCellEditable(cell) {
-        if(!cell.isEditable){ cell.contentEditable = true; }      
-    }
-
-    let selectedColor = null;
-        // Event listener for static color table
-    document.getElementById('staffTable').addEventListener('click', function(event) {
-        const cell = event.target;
         
-        // Check if the clicked cell is a color cell and get its background color
-        if (cell.classList.contains('color-cell')) {
-            selectedColor = cell.style.backgroundColor;
-            console.log("Selected color:", selectedColor); // For debugging
+        function makeCellEditable(cell) {
+            if(!cell.isEditable){ cell.contentEditable = true; }      
         }
-    });
 
-    // Event listener for dynamic table cell clicks (event delegation)
-    document.getElementById('toggleTable').addEventListener('click', function(event) {
-        const cell = event.target;
+        let selectedColor = null;
+            // Event listener for static color table
+        document.getElementById('staffTable').addEventListener('click', function(event) {
+            const cell = event.target;
+            
+            // Check if the clicked cell is a color cell and get its background color
+            if (cell.classList.contains('color-cell')) {
+                selectedColor = cell.style.backgroundColor;
+                console.log("Selected color:", selectedColor); // For debugging
+            }
+        });
 
-        // If the clicked cell is empty, apply the selected color to it
-        if (cell.classList.contains('empty-cell') && selectedColor) {
-            cell.style.backgroundColor = selectedColor; // Apply selected color to the cell
-        }
-    });
+        // Event listener for dynamic table cell clicks (event delegation)
+        document.getElementById(tableName).addEventListener('click', function(event) {
+            const cell = event.target;
+
+            // If the clicked cell is empty, apply the selected color to it
+            if (cell.classList.contains('empty-cell') && selectedColor) {
+                cell.style.backgroundColor = selectedColor; // Apply selected color to the cell
+            }
+        });
+    }
+        makeTable("week1", );
+        makeTable("week2");
+        makeTable("week3");
+        makeTable("week4");
+        makeTable("week5");
   </script>
 </body>
 </html>
