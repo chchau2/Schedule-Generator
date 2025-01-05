@@ -35,14 +35,17 @@
 <body>
     <h1>Staff</h1>
     <h3>Please input the days of the month which workers CAN NOT work and seperate days by ONE space (ie "6 25" means the 6th and 25th days of the month the worker can't make it)</h3>
+    <h3>Input the number of weeks you want the scheduler to make, always starts in the beginning</h3>
     <input id="chrisHours" placeholder="Chris days off">
     <input id="janiceHours" placeholder="Janice days off">
     <input id="natalieHours" placeholder="Natalie days off">
     <input id="megHours" placeholder="Meg days off">
     <input id="christineHours" placeholder="Christine days off">
     <input id="abrahamHours" placeholder="Abraham days off">
-    <input id="vickiHours" placeholder="Vicki days off">
-    <input id="monthButton" placeholder="Month in number">         
+    <input id="vickiHours" placeholder="Vicki days off"> 
+    <input id="startDate" placeholder="Start Date: MM/DD"> <!--this might be more flexiable than just the month?-->
+    <input id="numWeeks" placeholder="Number of Weeks">
+
     <button id="generateScheduleButton"> Generate Schedule </button>
     
     <table id="staffTable" border="1">
@@ -58,164 +61,9 @@
             <th class='color-cell' style="color: black; background-color: white">CLEAR</th>
         </tr>
     </table>
-    <h1>Week 1</h1>
-    <table id="week1" border="1">
-        <tr>
-            <th></th>
-            <th>Sunday</th>
-            <th>Monday</th>
-            <th>Tuesday</th>
-            <th>Wednesday</th>
-            <th>Thursday</th>
-            <th>Friday</th>
-            <th>Saturday</th>
-        </tr>
-    </table>
-    <h1>Week 2</h1>
-    <table id="week2" border="1">
-        <tr>
-            <th></th>
-            <th>Sunday</th>
-            <th>Monday</th>
-            <th>Tuesday</th>
-            <th>Wednesday</th>
-            <th>Thursday</th>
-            <th>Friday</th>
-            <th>Saturday</th>
-        </tr>
-    </table>
-    <h1>Week 3</h1>
-    <table id="week3" border="1">
-        <tr>
-            <th></th>
-            <th>Sunday</th>
-            <th>Monday</th>
-            <th>Tuesday</th>
-            <th>Wednesday</th>
-            <th>Thursday</th>
-            <th>Friday</th>
-            <th>Saturday</th>
-        </tr>
-    </table> 
-    <h1>Week 4</h1>
-    <table id="week4" border="1">
-        <tr>
-            <th></th>
-            <th>Sunday</th>
-            <th>Monday</th>
-            <th>Tuesday</th>
-            <th>Wednesday</th>
-            <th>Thursday</th>
-            <th>Friday</th>
-            <th>Saturday</th>
-        </tr>
-    </table>
-    <script src="generateschedule2.js"></script>
-    <script>
-        function makeTable(tableName){ //add a date parameter
-            let currentDate = new Date();
-        
-            // Function to get the start of the current week (Sunday)
-            function getStartOfWeek(date) {
-                let day = date.getDay(),
-                    diff = date.getDate() - day; // Get the difference from Sunday
-                return new Date(date.setDate(diff));
-            }
-        
-        // Get the start of the current week (Sunday)
-        let startOfWeek = getStartOfWeek(new Date(currentDate));
-        
-        // Define day names and the corresponding date numbers
-        const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-        const tableHeaders = document.querySelectorAll(`#${tableName} th`);
-        
-        // Loop through the days of the week and set day names + date in the headers
-        // forEach is an array method which helps iterate over the elements th (table headers) with index starting at 0
-        tableHeaders.forEach((th, index) => {
-            if (index > 0) { // Skip the first header (empty cell)
-                let dayOffset = index - 1; // Index 1 corresponds to Sunday, 2 to Monday, etc.
-                let dayDate = new Date(startOfWeek);
-                dayDate.setDate(startOfWeek.getDate() + dayOffset); // Calculate the date for the current day
-                
-                // Create a variable with day name and date
-                let dayHeader = `${dayNames[index - 1]} ${dayDate.getDate()}`;
-                
-                // Update the <th> with the generated variable
-                th.textContent = dayHeader; // Insert the variable content into the <th>
-            }
-        });
 
-        // Generate the table dynamically, meaning we dynamically make the table with cells
-        const table = document.getElementById(tableName);
-        const rows = 7; // Number of rows
-        const cols = 8; // Number of columns (14 * 14 = 196 cells)
+    <div id="finalTablesContainer"></div>
 
-    
-        for (let i = 0; i < rows; i++) {
-            const row = table.insertRow(); // Create a new row
-            //row.classList.add('empty-cell');
-            for (let j = 0; j < cols; j++) {
-                const cell = row.insertCell();
-                //const cell = row.insertCell(); // Create a new cell
-                if (i == 0 && j == 0) cell.textContent = '9am - 5pm';
-                if (i == 1 && j == 0) cell.textContent = 'HK';
-                if (i == 2 && j == 0) cell.textContent = '1pm - 9pm';
-                if (i == 3 && j == 0) cell.textContent = 'MID Shift';
-                if (i == 4 && j == 0) cell.textContent = 'NOTES:';
-                if (i == 5 && j == 0) cell.textContent = 'Janice';
-                if (i == 6 && j == 0) cell.textContent = 'Chris';
-                if ((i == 0 || i == 2 || i == 3) && j != 0) cell.classList.add('empty-cell');
-                if (i == 1) cell.addEventListener("click", () => {
-                    //makes clicking to add notes a bit weird, works but weird... but want to fix
-                    if (cell.style.backgroundColor == "yellow") {
-                        cell.style.backgroundColor = "";
-                    } else {
-                        cell.style.backgroundColor = "yellow"; // for Hk, but might not need if they can select the colors above
-                    }   
-                });
-                if (i > 3) {
-                    cell.onclick = function(){
-                        makeCellEditable(this);
-                    };
-                } else {
-                    cell.addEventListener("dblclick", function(){
-                        makeCellEditable(this);
-                    });
-                }
-            } 
-        } 
-        
-        function makeCellEditable(cell) {
-            if(!cell.isEditable){ cell.contentEditable = true; }      
-        }
-
-        let selectedColor = null;
-            // Event listener for static color table
-        document.getElementById('staffTable').addEventListener('click', function(event) {
-            const cell = event.target;
-            
-            // Check if the clicked cell is a color cell and get its background color
-            if (cell.classList.contains('color-cell')) {
-                selectedColor = cell.style.backgroundColor;
-                console.log("Selected color:", selectedColor); // For debugging
-            }
-        });
-
-        // Event listener for dynamic table cell clicks (event delegation)
-        document.getElementById(tableName).addEventListener('click', function(event) {
-            const cell = event.target;
-
-            // If the clicked cell is empty, apply the selected color to it
-            if (cell.classList.contains('empty-cell') && selectedColor) {
-                cell.style.backgroundColor = selectedColor; // Apply selected color to the cell
-            }
-        });
-    }
-        makeTable("week1", );
-        makeTable("week2");
-        makeTable("week3");
-        makeTable("week4");
-        makeTable("week5");
-  </script>
+    <script src="generateschedule2.js"></script> <!--change this to the right script which should make tables as well as generate the schedule within the js file-->
 </body>
 </html>

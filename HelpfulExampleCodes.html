@@ -3,128 +3,59 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hover to Show Checkboxes</title>
+  <title>Schedule Generator</title>
   <style>
     table {
       border-collapse: collapse;
       width: 100%;
+      margin-bottom: 20px;
     }
-    th, td {
-      border: 1px solid black;
+    td {
+      border: 1px solid #000000;
       padding: 10px;
       text-align: center;
       cursor: pointer;
-      position: relative;
     }
-
-    /* Style for the hidden checkbox menu */
-    .checkbox-menu {
-      display: none;
-      position: absolute;
-      top: 100%;
-      left: 0;
-      background-color: white;
-      border: 1px solid #ccc;
-      padding: 5px;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
-      z-index: 10;
-    }
-
-    /* Show the checkbox menu when hovering over the cell */
-    td:hover .checkbox-menu {
-      display: block;
-    }
-
-    /* Style for the checkboxes */
-    .checkbox-menu input {
-      margin: 5px;
+    th {
+      background-color: #f3f3f3;
     }
   </style>
 </head>
 <body>
+    <h1>Staff Schedule Generator</h1>
+    <h3>Input the start date and number of weeks you want to generate.</h3>
+    <input id="chrisHours" placeholder="Chris days off">
+    <input id="janiceHours" placeholder="Janice days off">
+    <input id="natalieHours" placeholder="Natalie days off">
+    <input id="megHours" placeholder="Meg days off">
+    <input id="christineHours" placeholder="Christine days off">
+    <input id="abrahamHours" placeholder="Abraham days off">
+    <input id="vickiHours" placeholder="Vicki days off">
+    <input id="startDate" placeholder="Start Date: MM/DD">
+    <input id="numWeeks" placeholder="Number of Weeks">
+    <button id="generateScheduleButton">Generate Schedule</button>
 
-<h1>Hover to Select Options</h1>
+    <table id="staffTable" border="1">
+        <tr>
+            <th class='color-cell' style="color: white; background-color: #431843">Chris</th>
+            <th class='color-cell' style="color: black; background-color: #74cb60">Janice</th>
+            <th class='color-cell' style="color: black; background-color: #9dc4de">Natalie</th>
+            <th class='color-cell' style="color: black; background-color: #e3863a">Meg</th>
+            <th class='color-cell' style="color: black; background-color: #cb9fd3">Christine</th>
+            <th class='color-cell' style="color: white; background-color: #bb2222">Abraham</th>
+            <th class='color-cell' style="color: white; background-color: #28356c">Vicki</th>
+            <th class='color-cell' style="color: black; background-color: #f3f361">HK</th>
+            <th class='color-cell' style="color: black; background-color: white">CLEAR</th>
+        </tr>
+    </table>
 
-<table id="staffTable">
-  <tr>
-    <th>Staff Member</th>
-    <th>Monday</th>
-    <th>Tuesday</th>
-    <th>Wednesday</th>
-    <th>Thursday</th>
-    <th>Friday</th>
-    <th>Saturday</th>
-    <th>Sunday</th>
-  </tr>
-  <tr>
-    <td>
-      Chris
-      <div class="checkbox-menu">
-        <label><iånput type="checkbox" class="info-checkbox" data-name="Chris" value="Morning Shift"> Morning Shift</label><br>
-        <label><input type="checkbox" class="info-checkbox" data-name="Chris" value="Afternoon Shift"> Afternoon Shift</label><br>
-        <label><input type="checkbox" class="info-checkbox" data-name="Chris" value="Night Shift"> Night Shift</label><br>
-      </div>
-    </td>
-    <td class="staff-cell">Click to Select</td>
-    <td class="staff-cell">Click to Select</td>
-    <td class="staff-cell">Click to Select</td>
-    <td class="staff-cell">Click to Select</td>
-    <td class="staff-cell">Click to Select</td>
-    <td class="staff-cell">Click to Select</td>
-    <td class="staff-cell">Click to Select</td>
-  </tr>
-  <tr>
-    <td>
-      Janice
-      <div class="checkbox-menu">
-        <label><input type="checkbox" class="info-checkbox" data-name="Janice" value="Morning Shift"> Morning Shift</label><br>
-        <label><input type="checkbox" class="info-checkbox" data-name="Janice" value="Afternoon Shift"> Afternoon Shift</label><br>
-        <label><input type="checkbox" class="info-checkbox" data-name="Janice" value="Night Shift"> Night Shift</label><br>
-      </div>
-    </td>
-    <td class="staff-cell">Click to Select</td>
-    <td class="staff-cell">Click to Select</td>
-    <td class="staff-cell">Click to Select</td>
-    <td class="staff-cell">Click to Select</td>
-    <td class="staff-cell">Click to Select</td>
-    <td class="staff-cell">Click to Select</td>
-    <td class="staff-cell">Click to Select</td>
-  </tr>
-</table>
 
-<h2>Selected Shifts</h2>
-<ul id="selectedShiftsList"></ul>
 
-<script>
-  // Get all the checkboxes and the selected shifts list
-  const checkboxes = document.querySelectorAll('.info-checkbox');
-  const selectedShiftsList = document.getElementById('selectedShiftsList');
+    <div id="scheduleContainer"></div> <!-- Container to hold dynamic tables -->
+    <script src="gs3.js"></script>
 
-  // Event listener for checkbox changes
-  checkboxes.forEach(checkbox => {
-    checkbox.addEventListener('change', function() {
-      const person = this.dataset.name;
-      const shift = this.value;
-      const listItem = document.createElement('li');
-      listItem.textContent = `${person}: ${shift}`;
 
-      // Check if the checkbox is checked or unchecked
-      if (this.checked) {
-        // If checked, add to the list
-        selectedShiftsList.appendChild(listItem);
-      } else {
-        // If unchecked, remove from the list
-        const items = selectedShiftsList.getElementsByTagName('li');
-        for (let item of items) {
-          if (item.textContent === `${person}: ${shift}`) {
-            selectedShiftsList.removeChild(item);
-            break;
-          }
-        }
-      }
-    });
-  });
-</script>
-
+    
+    
 </body>
 </html>

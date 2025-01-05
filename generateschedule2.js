@@ -1,4 +1,5 @@
 // Staff names and their respective colors
+
 const staffColors = {
   Natalie: '#9dc4de',
   Meg: '#e3863a',
@@ -105,13 +106,13 @@ function getAssignedDays(staffName, schedule) {
 
 // Populate table with schedule
 function populateScheduleTable(schedule, tableName) {
-  const table = document.getElementById(tableName);
+  const tableSch = document.getElementById(tableName);
 
   // Iterate over each day (index represents the day)
   schedule.forEach((daySchedule, dayIndex) => {
-    const dayCell = table.rows[0].cells[dayIndex + 1]; // First row is the header (skip it)
-    const dayShiftCell = table.rows[1].cells[dayIndex + 1]; // Day shift cell for current day
-    const nightShiftCell = table.rows[3].cells[dayIndex + 1]; // Night shift cell for current day
+    const dayCell = tableSch.rows[0].cells[dayIndex + 1]; // First row is the header (skip it)
+    const dayShiftCell = tableSch.rows[1].cells[dayIndex + 1]; // Day shift cell for current day
+    const nightShiftCell = tableSch.rows[3].cells[dayIndex + 1]; // Night shift cell for current day
 
     dayShiftCell.textContent = daySchedule.day.join(", "); // Fill day shift for the day
     nightShiftCell.textContent = daySchedule.night.join(", "); // Fill night shift for the day
@@ -125,8 +126,7 @@ function populateScheduleTable(schedule, tableName) {
 
 }
 
-function checkColor(cell)
-{
+function checkColor(cell) {
   const staffName = cell.textContent.trim();  // Get the staff name from the cell text
   const color = staffColors[staffName] || 'white';// Default to white if no color is defined
   if (cell.textContent === staffName) {
@@ -137,9 +137,7 @@ function checkColor(cell)
 
 // Trigger schedule generation
 document.getElementById("generateScheduleButton").addEventListener("click", () => {
-  //const schedule = generateSchedule();
   populateScheduleTable(generateSchedule(), "week1");
   populateScheduleTable(generateSchedule(), "week2");
   populateScheduleTable(generateSchedule(), "week3");
-  populateScheduleTable(generateSchedule(), "week4");
 });
