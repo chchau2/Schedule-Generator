@@ -1,4 +1,4 @@
-// schedule.js
+// schedule.js, THIS IS AN EXAMPLE 1.4.2025
 
 let selectedColor = null;
 
