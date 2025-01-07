@@ -170,7 +170,7 @@ function makeTable(inputDate, weekNum) {
                 if (i === 1) {
                     dayCell.textContent = schedule[j].day.join(", ");
                     schedule[j].day.forEach(staffName => checkColor(dayCell, staffName));
-                } else if (i === 2) {
+                } else if (i === 3) {
                     dayCell.textContent = schedule[j].night.join(", ");
                     schedule[j].night.forEach(staffName => checkColor(dayCell, staffName));
                 }
