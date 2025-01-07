@@ -176,6 +176,13 @@ function makeTable(inputDate, weekNum) {
                 }
                 dayCell.contentEditable = true;
             }
+            if (i == 1 || i ==3) {
+                dayCell.type = 'color-cell';
+            } else if (i == 2) {
+                dayCell.type = 'hk-cell';
+            } else {
+                dayCell.type = 'empty-cell';
+            }
             row.appendChild(dayCell);
             currentDate.setDate(currentDate.getDate() + 1); // Updates the dates
         }
@@ -188,6 +195,10 @@ function makeTable(inputDate, weekNum) {
     tableContainer.appendChild(weekTitle);
     tableContainer.appendChild(currTable);
 }
+
+let isEditMode = false; // Track if edit mode is active
+let wantedColor = 'white'; // Default color
+let hkcolor = '#rgb(243, 243, 97)'; //#f3f361
 
 // Trigger schedule generation on button click
 document.getElementById("generateScheduleButton").addEventListener("click", function () {
@@ -217,5 +228,34 @@ document.getElementById("generateScheduleButton").addEventListener("click", func
         const weekStartDate = new Date(startDate);
         weekStartDate.setDate(startDate.getDate() + (i * 7)); // Increment start date by 7 days per week
         makeTable(weekStartDate, i + 1);
+    }
+});
+
+  // Event listener for the "Edit Schedule" button
+  document.getElementById("editScheduleButton").addEventListener('click', function() {
+    isEditMode = !isEditMode;
+
+    if (isEditMode) {  
+        // Grabs staffs colors from table on click in order to transfer to the finalTable
+        document.getElementById('staffTable').addEventListener('click', function(event) {
+            wantedColor = event.target.style.backgroundColor; // Get the background color 
+        });
+        // Listen for clicks on the final tables container to apply the selected color
+        document.getElementById('finalTablesContainer').addEventListener('click', function(event) {
+            let clickedCell = event.target;
+            // Only proceed if the clicked element is a <td> and has the class 'color-cell'
+            //console.log(clickedCell.type);
+            if (clickedCell.type == 'color-cell') {
+                // Apply the selected color to the clicked cell
+                clickedCell.style.backgroundColor = wantedColor;
+            } else if (clickedCell.type == 'hk-cell') {
+                const currentColor = window.getComputedStyle(clickedCell).backgroundColor;
+                if (currentColor === 'rgb(243, 243, 97)') {
+                    clickedCell.style.backgroundColor = 'white';
+                } else {
+                    clickedCell.style.backgroundColor = '#f3f361';
+                }
+            }
+        });
     }
 });
