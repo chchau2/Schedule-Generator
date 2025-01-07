@@ -32,6 +32,14 @@ function shuffleArray(array) {
         [array[i], array[j]] = [array[j], array[i]];
     }
 }
+
+function startOfWeekDate(randomDay) {
+    const date = new Date(randomDay);
+    const dayOfWeek = date.getDay();
+    const daysToSubtract = dayOfWeek === 0 ? 0 : dayOfWeek; // If it's Sunday (0), subtract 6 days; otherwise subtract (dayOfWeek - 1)
+    date.setDate(date.getDate() - daysToSubtract);
+    return date;
+}
 /*
 // Parse days off from input into a Set 
 function parseInput(inputId) {
@@ -106,16 +114,18 @@ document.getElementById("generateScheduleButton").addEventListener("click", func
     const day = parseInt(startDateArr[1], 10);
 
     // Create a JavaScript Date object for the start date
+
     const year = new Date().getFullYear();
-    const startDate = new Date(year, month, day);
+    let startDate = new Date(year, month, day);
+    startDate = startOfWeekDate(startDate);
 
     // Clear previous schedule
     document.getElementById('finalTablesContainer').innerHTML = "";
 
     // Generate tables for the number of weeks specified
     for (let i = 0; i < numWeeks; i++) {
-        //const weekStartDate = new Date(startDate);
-        //weekStartDate.setDate(startDate.getDate() + (i * 7)); // Increment start date by 7 days per week
-        makeTable(startDate, i + 1); //NEED TO FIX  IT SO THAT IT DOESN'T START AT THAT DATE, BUT THE START OF THE WEEKS DATE
+        const weekStartDate = new Date(startDate);
+        weekStartDate.setDate(startDate.getDate() + (i * 7)); // Increment start date by 7 days per week
+        makeTable(weekStartDate, i + 1);
     }
 });
