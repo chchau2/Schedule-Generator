@@ -214,17 +214,13 @@ function overTwoDaysOff() {
     let returnVal = false;
     const form = document.getElementById('staffInput'); 
     const inputs = form.querySelectorAll('input'); 
-    console.log("Form", form);
-    console.log("inputs", inputs);
-    
+
     inputs.forEach(input => {
         let currDayOff = Number(input.value);
         if (!offDayMap.has(currDayOff)) {
            offDayMap.set(currDayOff, 1); 
         } else {
             let prevNum = Number(offDayMap.get(currDayOff));
-            console.log("key", currDayOff);
-            console.log("count", prevNum);
             if (prevNum == 2 && currDayOff != 0) {
                 alert(`dont have enough people for day ${currDayOff}`);
                 returnVal = true;
@@ -279,10 +275,12 @@ let staffTableClickListener;
 let finalTablesClickListener;
 let finalTablesClickListenerForWriting;
 let isEditMode = false; // Track if edit mode is active
-let hkcolor = '#rgb(243, 243, 97)'; //#f3f361
+//let hkcolor = '#rgb(243, 243, 97)'; //#f3f361
 let wantedColor = ''; // Default color
 
 isToggleOn.addEventListener('change', function() {
+    document.getElementById("staffTable").removeEventListener('click', staffTableClickListener);
+    document.getElementById("finalTablesContainer").removeEventListener('click', finalTablesClickListener);
     isEditMode = isToggleOn.checked;
     staffTableClickListener = function(event) {
         if (!isEditMode) return;
@@ -295,13 +293,16 @@ isToggleOn.addEventListener('change', function() {
         let clickedCell = event.target;
         if (clickedCell.type == 'color-cell' && wantedColor != '') {
             clickedCell.style.backgroundColor = wantedColor;
+            console.log("test");
         } else if (clickedCell.type == 'hk-cell') {
-            const currentColor = window.getComputedStyle(clickedCell).backgroundColor;
-            if (currentColor === 'rgb(243, 243, 97)') {
-                clickedCell.style.backgroundColor = 'white';
+            let hkcolor = '#rgb(243, 243, 97)'; //#f3f361
+            if (clickedCell.style.backgroundColor === "rgb(243, 243, 97)") {
+                hkcolor = "white";
             } else {
-                clickedCell.style.backgroundColor = '#f3f361';
+                hkcolor = "rgb(243, 243, 97)";
             }
+            console.log("changed");
+            clickedCell.style.backgroundColor = hkcolor;
         }
     };
     function disableEditing() {
@@ -320,13 +321,14 @@ isToggleOn.addEventListener('change', function() {
             cell.contentEditable = true; // Enable content editing
         });
     }
+
     if (isEditMode) {
-        document.getElementById('staffTable').addEventListener('click', staffTableClickListener)
+        document.getElementById('staffTable').addEventListener('click', staffTableClickListener);
         document.getElementById('finalTablesContainer').addEventListener('click', finalTablesClickListener);
         enableEditing();
     } else {
-        document.getElementById("staffTable").removeEventListener('click', staffTableClickListener);
-        document.getElementById("finalTablesContainer").removeEventListener('click', finalTablesClickListener);
+        // document.getElementById("staffTable").removeEventListener('click', staffTableClickListener);
+        // document.getElementById("finalTablesContainer").removeEventListener('click', finalTablesClickListener);
+        //moved it to the top to ensure that any event listeners which were added before would be removed
         disableEditing();
-      return;
     }})
