@@ -34,49 +34,44 @@ function parseDaysOff(inputId) {
 
 // Generate the schedule
 function generateSchedule() {
-  // Get today's date
-  const today = new Date();
 
-  // Calculate the first day of the schedule (start of the current week)
-  const scheduleStartDate = new Date(today);
-  scheduleStartDate.setDate(today.getDate() - today.getDay()); // Move to Sunday (start of the week)
+  // Calculate today's offset
+  const today = new Date();
+  const offset = today.getDay(); 
+
 
   // Fetch staff availability from input fields
   const staffAvailability = {
-    Natalie: parseDaysOff("natalieHours"), // Set of calendar dates (e.g., 1, 2, ...)
+    Natalie: parseDaysOff("natalieHours"),
     Meg: parseDaysOff("megHours"),
     Christine: parseDaysOff("christineHours"),
     Abraham: parseDaysOff("abrahamHours"),
   };
 
   let schedule;
-  while (true) {
+  while(true){
     let isValid = true;
-    schedule = Array(7).fill(null).map(() => ({ day: [], night: [] }));
+    schedule = Array(7).fill(null).map(() => ({ day: [], night: [] ,date:[]}));
 
     // Helper to check if a day is a weekend
-    const isWeekend = (dayIndex) => dayIndex === 0 || dayIndex === 6;
+    const isWeekend = (dayIndex) => dayIndex % 7 === 0 || dayIndex % 7 === 6;
 
     // Assign shifts for each day
     schedule.forEach((daySchedule, dayIndex) => {
-      // Calculate the actual calendar date for this day
-      const currentDate = new Date(scheduleStartDate);
-      currentDate.setDate(scheduleStartDate.getDate() + dayIndex); // Add dayIndex to start date
-      const calendarDate = currentDate.getDate(); // Get the day of the month (1-31)
-
       // Shuffle staff names each day to randomize the order
       const staffNames = Object.keys(staffRules);
-      shuffleArray(staffNames);
+      shuffleArray(staffNames); // Shuffle staff for the current day
 
-      for (const staffName of staffNames) {
-        const rules = staffRules[staffName];
+      for (const staffName of staffNames) { // Loop through shuffled staff names
+        const rules = staffRules[staffName]; // Access staff rules by name
 
-        // Check if staff member has reached their max allowed days
+        // Check if staff member has already been assigned their maxDays
         const assignedDays = getAssignedDays(staffName, schedule);
         if (rules.maxDays && assignedDays >= rules.maxDays) continue;
 
-        // Skip staff member if unavailable on the calendar date
-        if (staffAvailability[staffName].has(calendarDate)) continue;
+        // Skip staff member if unavailable for the day
+        const availabilityIndex = (dayIndex + offset) % 7; // Wrap around the week
+        if (staffAvailability[staffName].has(availabilityIndex + 1)) continue;
 
         let possibleShifts = ["day", "night"];
         if (rules.shiftPreferences) {
@@ -91,15 +86,12 @@ function generateSchedule() {
           }
         }
       }
-
-      // Validate that all shifts are filled
+      // Check if all shifts are filled for the day
       if (daySchedule.day.length === 0 || daySchedule.night.length === 0) {
         isValid = false; // Mark as invalid schedule
       }
     });
-
-    // Break the loop if a valid schedule is generated
-    if (isValid) break;
+    if(isValid) break;
   }
   return schedule;
 }
@@ -112,14 +104,14 @@ function getAssignedDays(staffName, schedule) {
 }
 
 // Populate table with schedule
-function populateScheduleTable(schedule) {
-  const table = document.getElementById("toggleTable");
+function populateScheduleTable(schedule, tableName) {
+  const tableSch = document.getElementById(tableName);
 
   // Iterate over each day (index represents the day)
   schedule.forEach((daySchedule, dayIndex) => {
-    const dayCell = table.rows[0].cells[dayIndex + 1]; // First row is the header (skip it)
-    const dayShiftCell = table.rows[1].cells[dayIndex + 1]; // Day shift cell for current day
-    const nightShiftCell = table.rows[3].cells[dayIndex + 1]; // Night shift cell for current day
+    const dayCell = tableSch.rows[0].cells[dayIndex + 1]; // First row is the header (skip it)
+    const dayShiftCell = tableSch.rows[1].cells[dayIndex + 1]; // Day shift cell for current day
+    const nightShiftCell = tableSch.rows[3].cells[dayIndex + 1]; // Night shift cell for current day
 
     dayShiftCell.textContent = daySchedule.day.join(", "); // Fill day shift for the day
     nightShiftCell.textContent = daySchedule.night.join(", "); // Fill night shift for the day
@@ -133,8 +125,7 @@ function populateScheduleTable(schedule) {
 
 }
 
-function checkColor(cell)
-{
+function checkColor(cell) {
   const staffName = cell.textContent.trim();  // Get the staff name from the cell text
   const color = staffColors[staffName] || 'white';// Default to white if no color is defined
   if (cell.textContent === staffName) {
@@ -145,7 +136,8 @@ function checkColor(cell)
 
 // Trigger schedule generation
 document.getElementById("generateScheduleButton").addEventListener("click", () => {
-  const schedule = generateSchedule();
-  populateScheduleTable(schedule);
-
+  //this part will change because we are going to make as many tables as they want, so it should not be a fixed number of populateST
+  populateScheduleTable(generateSchedule(), "week1");
+  populateScheduleTable(generateSchedule(), "week2");
+  populateScheduleTable(generateSchedule(), "week3");
 });

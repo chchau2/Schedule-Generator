@@ -22,6 +22,18 @@ const staffColors = {
     Abraham: '#bb2222',
 };
 
+//color map of all the options on the stafftable, so user will know what they are clicking on
+let colorMap = new Map();
+colorMap.set("rgb(67, 24, 67)", "Chris");
+colorMap.set("rgb(116, 203, 96)", "Janice");
+colorMap.set("rgb(157, 196, 222)", "Natalie");
+colorMap.set("rgb(227, 134, 58)", "Meg");
+colorMap.set("rgb(203, 159, 211)", "Christine");
+colorMap.set("rgb(187, 34, 34)", "Abraham");
+colorMap.set("rgb(40, 53, 108)", "Vicki");
+colorMap.set("rgb(243, 243, 97)", "HK");
+colorMap.set("white", "CLEAR (White)");
+
 // Staff constraints
 const staffRules = {
     Natalie: { requiredDays: 5, maxDays: 5, maxShiftsPerDay: 1 },
@@ -174,7 +186,8 @@ function makeTable(inputDate, weekNum) {
                     dayCell.textContent = schedule[j].night.join(", ");
                     schedule[j].night.forEach(staffName => checkColor(dayCell, staffName));
                 }
-                dayCell.contentEditable = true;
+                dayCell.textContent = null;
+                //dayCell.contentEditable = true; bc this should be something which is in edit mode 
             }
             if (i == 1 || i ==3) {
                 dayCell.type = 'color-cell';
@@ -196,20 +209,50 @@ function makeTable(inputDate, weekNum) {
     tableContainer.appendChild(currTable);
 }
 
-let isEditMode = false; // Track if edit mode is active
-let wantedColor = 'white'; // Default color
-let hkcolor = '#rgb(243, 243, 97)'; //#f3f361
+function overTwoDaysOff() {
+    let offDayMap = new Map();
+    let returnVal = false;
+    const form = document.getElementById('staffInput'); 
+    const inputs = form.querySelectorAll('input'); 
+    console.log("Form", form);
+    console.log("inputs", inputs);
+    
+    inputs.forEach(input => {
+        let currDayOff = Number(input.value);
+        if (!offDayMap.has(currDayOff)) {
+           offDayMap.set(currDayOff, 1); 
+        } else {
+            let prevNum = Number(offDayMap.get(currDayOff));
+            console.log("key", currDayOff);
+            console.log("count", prevNum);
+            if (prevNum == 2 && currDayOff != 0) {
+                alert(`dont have enough people for day ${currDayOff}`);
+                returnVal = true;
+                return true;
+            } else {
+                offDayMap.set(currDayOff, prevNum + 1);
+            }
+        }
+    });
+    return returnVal;
+}
+
+
 
 // Trigger schedule generation on button click
 document.getElementById("generateScheduleButton").addEventListener("click", function () {
     const startDateInput = document.getElementById('startDate').value;
     const numWeeks = document.getElementById('numWeeks').value;
+    if (overTwoDaysOff()) return;
 
+    if ((startDateInput.length > 5 && startDateInput[startDateInput.length - 1] != " ") || Number(numWeeks) > 12 || Number(numWeeks) < 1) {
+        alert("Please check your fomat for start date and the number of weeks.");
+        return;
+    }
     if (!startDateInput || !numWeeks) {
         alert("Please enter both the start date and the number of weeks.");
         return;
     }
-
     // Parse the start date input into MM/DD format
     const startDateArr = startDateInput.trim().split(" ");
     const month = parseInt(startDateArr[0], 10) - 1; // Month is 0-indexed
@@ -231,31 +274,59 @@ document.getElementById("generateScheduleButton").addEventListener("click", func
     }
 });
 
-  // Event listener for the "Edit Schedule" button
-  document.getElementById("editScheduleButton").addEventListener('click', function() {
-    isEditMode = !isEditMode;
+let isToggleOn = document.getElementById("toggleButton");
+let staffTableClickListener;
+let finalTablesClickListener;
+let finalTablesClickListenerForWriting;
+let isEditMode = false; // Track if edit mode is active
+let hkcolor = '#rgb(243, 243, 97)'; //#f3f361
+let wantedColor = ''; // Default color
 
-    if (isEditMode) {  
-        // Grabs staffs colors from table on click in order to transfer to the finalTable
-        document.getElementById('staffTable').addEventListener('click', function(event) {
-            wantedColor = event.target.style.backgroundColor; // Get the background color 
-        });
-        // Listen for clicks on the final tables container to apply the selected color
-        document.getElementById('finalTablesContainer').addEventListener('click', function(event) {
-            let clickedCell = event.target;
-            // Only proceed if the clicked element is a <td> and has the class 'color-cell'
-            //console.log(clickedCell.type);
-            if (clickedCell.type == 'color-cell') {
-                // Apply the selected color to the clicked cell
-                clickedCell.style.backgroundColor = wantedColor;
-            } else if (clickedCell.type == 'hk-cell') {
-                const currentColor = window.getComputedStyle(clickedCell).backgroundColor;
-                if (currentColor === 'rgb(243, 243, 97)') {
-                    clickedCell.style.backgroundColor = 'white';
-                } else {
-                    clickedCell.style.backgroundColor = '#f3f361';
-                }
+isToggleOn.addEventListener('change', function() {
+    isEditMode = isToggleOn.checked;
+    staffTableClickListener = function(event) {
+        if (!isEditMode) return;
+        wantedColor = event.target.style.backgroundColor; // Get the background color 
+        nameRelatingToTheColor = colorMap.get(wantedColor)
+        document.getElementById("selected-color-text").textContent = `Selected Color: ${nameRelatingToTheColor}`;
+    };
+    finalTablesClickListener = function(event) {
+        if (!isEditMode) return;
+        let clickedCell = event.target;
+        if (clickedCell.type == 'color-cell' && wantedColor != '') {
+            clickedCell.style.backgroundColor = wantedColor;
+        } else if (clickedCell.type == 'hk-cell') {
+            const currentColor = window.getComputedStyle(clickedCell).backgroundColor;
+            if (currentColor === 'rgb(243, 243, 97)') {
+                clickedCell.style.backgroundColor = 'white';
+            } else {
+                clickedCell.style.backgroundColor = '#f3f361';
             }
+        }
+    };
+    function disableEditing() {
+        const cells = document.querySelectorAll('#finalTablesContainer td');
+        const cellsToEdit = Array.from(cells).slice(8);
+        //filtered = cellsToEdit.filter((_, index) => index % 8 !== 0);
+        cellsToEdit.forEach(cell => {
+            cell.contentEditable = false; // Disable content editing
         });
     }
-});
+    // Function to enable content editing on all cells
+    function enableEditing() {
+        const cells = document.querySelectorAll('#finalTablesContainer td');
+        const cellsToEdit = Array.from(cells).slice(8);
+        cellsToEdit.forEach(cell => {
+            cell.contentEditable = true; // Enable content editing
+        });
+    }
+    if (isEditMode) {
+        document.getElementById('staffTable').addEventListener('click', staffTableClickListener)
+        document.getElementById('finalTablesContainer').addEventListener('click', finalTablesClickListener);
+        enableEditing();
+    } else {
+        document.getElementById("staffTable").removeEventListener('click', staffTableClickListener);
+        document.getElementById("finalTablesContainer").removeEventListener('click', finalTablesClickListener);
+        disableEditing();
+      return;
+    }})

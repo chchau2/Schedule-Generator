@@ -16,6 +16,55 @@
       cursor: pointer;
       position: relative; /* For positioning the text box */
     }
+    /* The switch container */
+  .switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+  }
+
+  /* Hide the default checkbox */
+  .switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  /* The slider (the part that moves) */
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: 0.4s;
+    border-radius: 34px;
+  }
+
+  /* The slider's circle (the part that moves when toggled) */
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    border-radius: 50%;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: 0.4s;
+  }
+
+  /* When the checkbox is checked (the toggle is on) */
+  input:checked + .slider {
+    background-color: #4CAF50;
+  }
+
+  input:checked + .slider:before {
+    transform: translateX(26px);
+  }
     /* might not need this/not sure what it does so garabage [We shoudl probably go over the head stuff later on]
     .text-box {
       position: absolute;
@@ -36,19 +85,27 @@
     <h1>Staff</h1>
     <h3>Please input the days of the month which workers CAN NOT work and seperate days by ONE space (ie "6 25" means the 6th and 25th days of the month the worker can't make it)</h3>
     <h3>Input the number of weeks you want the scheduler to make, always starts in the beginning</h3>
-    <input id="chrisHours" placeholder="Chris days off">
-    <input id="janiceHours" placeholder="Janice days off">
-    <input id="natalieHours" placeholder="Natalie days off">
-    <input id="megHours" placeholder="Meg days off">
-    <input id="christineHours" placeholder="Christine days off">
-    <input id="abrahamHours" placeholder="Abraham days off">
-    <input id="vickiHours" placeholder="Vicki days off"> 
-    <input id="startDate" placeholder="Start Date: MM DD"> <!--this might be more flexiable than just the month?-->
-    <input id="numWeeks" placeholder="Number of Weeks">
+    <form id="staffInput">
+      <input id="natalieHours" placeholder="Natalie days off">
+      <input id="megHours" placeholder="Meg days off">
+      <input id="christineHours" placeholder="Christine days off">
+      <input id="abrahamHours" placeholder="Abraham days off">
+      <input id="vickiHours" placeholder="Vicki days off"> 
+    </form>
+      <input id="startDate" placeholder="Start Date: MM DD"> <!--this might be more flexiable than just the month?-->
+      <input id="numWeeks" placeholder="Number of Weeks">
 
     <button id="generateScheduleButton"> Generate Schedule </button>
-    <button id="editScheduleButton"> Edit Schedule </button>
-    <button id="viewOnlyButton"> View Only </button> <!--idk if we really want this but i think its a good additional as of now-->
+    <label class="switch">
+      <input type="checkbox" id="toggleButton">
+      <span class="slider"></span>
+    </label>
+    <div id="color-display" style="margin-top: 20px; width: 200px; height: 25px; border: 1px solid #000;">
+      <span id="selected-color-text">Selected Color: None</span>
+    </div>
+    
+    <!-- <button id="editScheduleButton"> Edit Schedule </button>
+    <button id="viewOnlyButton"> View Only </button> idk if we really want this but i think its a good additional as of now -->
 
     <table id="staffTable" border="1">
         <tr>
