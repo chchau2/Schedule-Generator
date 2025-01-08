@@ -16,6 +16,28 @@
       cursor: pointer;
       position: relative; /* For positioning the text box */
     }
+  h1 {
+    text-align: center;
+  }
+
+  #staffInput {
+    display: inline-block;
+  }
+  input {
+    padding: 12px;
+    border-radius: 5px;
+  }
+  #generateScheduleButton {
+    font-size: 15px;
+    padding: 10px 20px; 
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  #generateScheduleButton:hover {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+  }
     /* The switch container */
   .switch {
     position: relative;
@@ -65,6 +87,10 @@
   input:checked + .slider:before {
     transform: translateX(26px);
   }
+
+  #staffTable th{
+    height: 40px;
+  }
     /* might not need this/not sure what it does so garabage [We shoudl probably go over the head stuff later on]
     .text-box {
       position: absolute;
@@ -82,9 +108,11 @@
   </style>
 </head>
 <body>
-    <h1>Staff</h1>
-    <h3>Please input the days of the month which workers CAN NOT work and seperate days by ONE space (ie "6 25" means the 6th and 25th days of the month the worker can't make it)</h3>
-    <h3>Input the number of weeks you want the scheduler to make, always starts in the beginning</h3>
+    <h1>Staff Schedule</h1>
+    <h3>Input a start date (MM DD) and the number of weeks you would like to generate schedules for from the start date.
+    Add the days off for each staff memeber and seperate each day with ONE SINGLE space (if there is any)</h3>
+    <h4>Example of start date: "6 25" represents June 25</h4>
+    <h4>Example of days off: "7 27" represents the respected staff member CAN NOT work on the 7th and 27th of that month</h4>
     <form id="staffInput">
       <input id="natalieHours" placeholder="Natalie days off">
       <input id="megHours" placeholder="Meg days off">
@@ -100,14 +128,14 @@
       <input type="checkbox" id="toggleButton">
       <span class="slider"></span>
     </label>
-    <div id="color-display" style="margin-top: 20px; width: 200px; height: 25px; border: 1px solid #000;">
+    <div id="color-display" style="margin-top: 20px; width: 250px; height: 25px; border: 1px solid #000; text-align: center;">
       <span id="selected-color-text">Selected Color: None</span>
     </div>
     
     <!-- <button id="editScheduleButton"> Edit Schedule </button>
     <button id="viewOnlyButton"> View Only </button> idk if we really want this but i think its a good additional as of now -->
 
-    <table id="staffTable" border="1">
+    <table id="staffTable" border="1" style="table-layout: fixed; height: 10px;">
         <tr>
             <th class='color-cell' style="color: white; background-color: #431843">Chris</th>
             <th class='color-cell' style="color: black; background-color: #74cb60">Janice</th>
