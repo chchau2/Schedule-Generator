@@ -152,6 +152,11 @@ function parseDaysOff(inputId) {
     return new Set(input.split(" ").map(Number)); // Convert to a Set of day numbers
 }
 
+function parseStrToArray (str) {
+    let cleanStr = str.trim().split(" ");
+    return cleanStr.map(Number);
+}
+
 // Make table for each week
 function makeTable(inputDate, weekNum) {
     const tableContainer = document.getElementById("finalTablesContainer"); // this will be the container of all tables
@@ -211,26 +216,29 @@ function makeTable(inputDate, weekNum) {
 
 function overTwoDaysOff() {
     let offDayMap = new Map();
-    let returnVal = false;
+    let returnVal = "";
     const form = document.getElementById('staffInput'); 
     const inputs = form.querySelectorAll('input'); 
 
-    inputs.forEach(input => {
-        let currDayOff = Number(input.value);
-        if (!offDayMap.has(currDayOff)) {
-           offDayMap.set(currDayOff, 1); 
-        } else {
-            let prevNum = Number(offDayMap.get(currDayOff));
-            if (prevNum == 2 && currDayOff != 0) {
-                alert(`dont have enough people for day ${currDayOff}`);
-                returnVal = true;
-                return true;
-            } else {
-                offDayMap.set(currDayOff, prevNum + 1);
-            }
+    for (let i = 0; i < inputs.length; i++) {
+        let currArr = (parseStrToArray(inputs[i].value));
+        for (let j = 0; j < currArr.length; j++) {
+            let currNum = currArr[j];
+            if (!offDayMap.has(currNum)) {
+                offDayMap.set(currNum, 1); 
+             } else {
+                 let prevNumCount = Number(offDayMap.get(currNum));
+                 if (prevNumCount == 2 && currNum != 0) {
+                     returnVal += " " + currNum + ",";
+                     offDayMap.set(currNum, prevNumCount + 1);
+                 } else {
+                     offDayMap.set(currNum, prevNumCount + 1);
+                 }
+             }
         }
-    });
-    return returnVal;
+        
+    }
+    return returnVal.trim();
 }
 
 
@@ -239,7 +247,11 @@ function overTwoDaysOff() {
 document.getElementById("generateScheduleButton").addEventListener("click", function () {
     const startDateInput = document.getElementById('startDate').value;
     const numWeeks = document.getElementById('numWeeks').value;
-    if (overTwoDaysOff()) return;
+    let shortStaffDays = overTwoDaysOff(); //this should ret a string, if "" then no days short staff else i should tell the user the days which they are short staff
+    if (shortStaffDays) {
+        alert(`Too many staff requested day(s) ${shortStaffDays} please change those day(s).`); 
+        return;
+    }
 
     if ((startDateInput.length > 5 && startDateInput[startDateInput.length - 1] != " ") || Number(numWeeks) > 12 || Number(numWeeks) < 1) {
         alert("Please check your fomat for start date and the number of weeks.");
