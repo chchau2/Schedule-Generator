@@ -332,3 +332,38 @@ isToggleOn.addEventListener('change', function() {
         //moved it to the top to ensure that any event listeners which were added before would be removed
         disableEditing();
     }})
+
+    document.getElementById("saveButton").addEventListener("click", async function () {
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF("p", "mm", "a4"); // Portrait, millimeters, A4 size
+        const containers = ["staffTable", "finalTablesContainer"]; // Add IDs of your containers
+        let yOffset = 10; // Initial vertical offset in the PDF
+    
+        for (let i = 0; i < containers.length; i++) {
+            const element = document.getElementById(containers[i]);
+    
+            if (element) {
+                // Render the container to a canvas
+                const canvas = await html2canvas(element,{scale:1});
+                const imgData = canvas.toDataURL("image/jpeg"); // Convert canvas to image, using Jpeg for less memory
+                
+                // Calculate dimensions to fit the PDF
+                const imgWidth = 190; // PDF width (A4) minus margins
+                const imgHeight = (canvas.height * imgWidth) / canvas.width; // Maintain aspect ratio
+    
+                // Check if the image fits on the current page, else add a new page
+                if (yOffset + imgHeight > 297) { // 297mm is A4 height
+                    pdf.addPage();
+                    yOffset = 10; // Reset offset for new page
+                }
+    
+                // Add the image to the JPEG
+                pdf.addImage(imgData, "JPEG", 10, yOffset, imgWidth, imgHeight);
+                yOffset += imgHeight + 10; // Update vertical offset for the next container
+            }
+        }
+    
+        // Save the JPEG
+        pdf.save("schedule.pdf");
+    });
+

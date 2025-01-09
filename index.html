@@ -47,6 +47,17 @@
     color: white;
     border: none;
   }
+  #saveButton {
+    font-size: 15px;
+    padding: 10px 20px; 
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  #generateScheduleButton:hover {
+    background-color: #45c2de;
+    color: white;
+    border: none;
+  }
     /* The switch container */
   .switch {
     position: relative;
@@ -123,16 +134,17 @@
     <h4>Example of start date: "6 25" represents June 25</h4>
     <h4>Example of days off: "7 27" represents the respected staff member CAN NOT work on the 7th and 27th of that month</h4>
     <form id="staffInput">
-      <input id="natalieHours" placeholder="Natalie days off" style="background-color: #9dc4de;">
-      <input id="megHours" placeholder="Meg days off" style="background-color: #e3863a;">
-      <input id="christineHours" placeholder="Christine days off" style="background-color: #cb9fd3;">
-      <input id="abrahamHours" placeholder="Abraham days off" style="background-color: #bb2222;">
-      <input id="vickiHours" placeholder="Vicki days off" style="background-color: #28356c;">
+      <input id="natalieHours" placeholder="Natalie days off" style="background-color: #9dc4de; color: black">
+      <input id="megHours" placeholder="Meg days off" style="background-color: #e3863a; color: black">
+      <input id="christineHours" placeholder="Christine days off" style="background-color: #cb9fd3; color: black">
+      <input id="abrahamHours" placeholder="Abraham days off" style="background-color: #bb2222; color: white">
+      <input id="vickiHours" placeholder="Vicki days off" style="background-color: #28356c; color: white">
     </form>
       <input id="startDate" placeholder="Start Date: MM DD"> <!--this might be more flexiable than just the month?-->
       <input id="numWeeks" placeholder="Number of Weeks">
 
     <button id="generateScheduleButton"> Generate Schedule </button>
+    <button id="saveButton">Save Schedule</button>
     <label class="switch">
       <input type="checkbox" id="toggleButton">
       <span class="slider"></span>
@@ -159,7 +171,11 @@
     </table>
 
     <div id="finalTablesContainer"></div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
 
     <script src="final.js"></script> <!--change this to the right script which should make tables as well as generate the schedule within the js file-->
-</body>
+
+   <!--- <script src="save.js"></script>-->
+  </body>
 </html>
