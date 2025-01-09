@@ -7,7 +7,14 @@
 
 //START: constant objects and helper functions
 
-//Object of working staff's colors. Should be used to populate table and edit mode?
+// Color of cells helper function
+function checkColor(cell, staffName) {
+    const color = staffColors[staffName] || 'white'; // Default to white if no color is defined
+    cell.style.backgroundColor = color;  // Change the cell's background color
+  }
+
+
+// Object of working staff's colors. Should be used to populate table and edit mode?
 const staffColors = {
     Natalie: '#9dc4de',
     Meg: '#e3863a',
@@ -15,17 +22,32 @@ const staffColors = {
     Abraham: '#bb2222',
 };
 
+//color map of all the options on the stafftable, so user will know what they are clicking on
+let colorMap = new Map();
+colorMap.set("rgb(67, 24, 67)", "Chris");
+colorMap.set("rgb(116, 203, 96)", "Janice");
+colorMap.set("rgb(157, 196, 222)", "Natalie");
+colorMap.set("rgb(227, 134, 58)", "Meg");
+colorMap.set("rgb(203, 159, 211)", "Christine");
+colorMap.set("rgb(187, 34, 34)", "Abraham");
+colorMap.set("rgb(40, 53, 108)", "Vicki");
+colorMap.set("rgb(243, 243, 97)", "HK");
+colorMap.set("white", "CLEAR (White)");
+
 // Staff constraints
 const staffRules = {
     Natalie: { requiredDays: 5, maxDays: 5, maxShiftsPerDay: 1 },
     Meg: { requiredDays: 5, maxDays: 5, maxShiftsPerDay: 1 },
     Christine: { minDays: 1, maxDays: 2, maxShiftsPerDay: 1 },
-    Abraham: {minDays: 1, maxDays: 2, maxShiftsPerDay: 1,
-      shiftPreferences: (day, isWeekend) => isWeekend ? ["day", "night"] : ["night"] //Abraham can work day and/or night on weekends, but NOT weekdays
+    Abraham: {
+        minDays: 1,
+        maxDays: 2,
+        maxShiftsPerDay: 1,
+        shiftPreferences: (day, isWeekend) => isWeekend ? ["day", "night"] : ["night"]
     },
 };
 
-//used to shuffle/randomize the staff in order to generate the tables
+// Used to shuffle/randomize the staff in order to generate the tables
 function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -33,37 +55,114 @@ function shuffleArray(array) {
     }
 }
 
+// Calculate the start of the week based on the input date. Finds the right date to put on Sundays
 function startOfWeekDate(randomDay) {
     const date = new Date(randomDay);
+    //day of the week (0 = Sunday, 1 = Monday...)
     const dayOfWeek = date.getDay();
-    const daysToSubtract = dayOfWeek === 0 ? 0 : dayOfWeek; // If it's Sunday (0), subtract 6 days; otherwise subtract (dayOfWeek - 1)
-    date.setDate(date.getDate() - daysToSubtract);
+    
+    let offset;
+
+    //if day of week is sunday, then no offset is needed
+    if (dayOfWeek === 0) {
+        offset = 0;
+    } else {
+        //else, set the offset correctly
+        offset = dayOfWeek;
+    }
+    //find correct date number for sunday
+    date.setDate(date.getDate() - offset);
     return date;
 }
-/*
-// Parse days off from input into a Set 
-function parseInput(inputId) {
+
+// Schedule generation logic (integrating the logic we discussed earlier)
+function generateSchedule(startDate) {
+    // Get the staff availability from input fields
+    const staffAvailability = {
+        Natalie: parseDaysOff("natalieHours"), // Example: Set of calendar dates (e.g., 1, 2, ...)
+        Meg: parseDaysOff("megHours"),
+        Christine: parseDaysOff("christineHours"),
+        Abraham: parseDaysOff("abrahamHours"),
+    };
+
+    let schedule;
+    while (true) {
+        let isValid = true;
+        schedule = Array(7).fill(null).map(() => ({ day: [], night: [] }));
+
+        // Helper to check if a day is a weekend
+        const isWeekend = (dayIndex) => dayIndex === 0 || dayIndex === 6;
+
+        // Assign shifts for each day
+        schedule.forEach((daySchedule, dayIndex) => {
+            const currentDate = new Date(startDate);
+            currentDate.setDate(startDate.getDate() + dayIndex); // Calculate actual date for the day
+            const calendarDate = currentDate.getDate(); // Get the day of the month (1-31)
+
+            // Shuffle staff names each day to randomize the order
+            const staffNames = Object.keys(staffRules);
+            shuffleArray(staffNames);
+
+            for (const staffName of staffNames) {
+                const rules = staffRules[staffName];
+
+                // Check if staff member has reached their max allowed days
+                const assignedDays = getAssignedDays(staffName, schedule);
+                if (rules.maxDays && assignedDays >= rules.maxDays) continue;
+
+                // Skip staff member if unavailable on the calendar date
+                if (staffAvailability[staffName].has(calendarDate)) continue;
+
+                let possibleShifts = ["day", "night"];
+                if (rules.shiftPreferences) {
+                    possibleShifts = rules.shiftPreferences(dayIndex, isWeekend(dayIndex));
+                }
+
+                // Assign shift if there's room
+                for (const shift of possibleShifts) {
+                    if (daySchedule[shift].length < 1) { // Only one person per shift
+                        daySchedule[shift].push(staffName);
+                        break;
+                    }
+                }
+            }
+
+            // Validate that all shifts are filled
+            if (daySchedule.day.length === 0 || daySchedule.night.length === 0) {
+                isValid = false; // Mark as invalid schedule
+            }
+        });
+
+        // Break the loop if a valid schedule is generated
+        if (isValid) break;
+    }
+    return schedule;
+}
+
+// Count assigned days
+function getAssignedDays(staffName, schedule) {
+    return schedule.reduce((count, daySchedule) =>
+        count + (daySchedule.day.includes(staffName) + daySchedule.night.includes(staffName)), 0
+    );
+}
+
+// Parse days off from input fields
+function parseDaysOff(inputId) {
     const input = document.getElementById(inputId).value.trim();
-    return input.split(" ");
-    //return new Set(input.split(" ").map(Number)); // Convert to a Set of day numbers
+    return new Set(input.split(" ").map(Number)); // Convert to a Set of day numbers
+}
 
-}*/
-
-
-/*
-*
-*
-*
-*/
-//START of the BIG functions
-
-//making the table. we should call this within a loop of the totalNumWeeks, thus the parameter we have right now is just used to write the heading and assign name to this table
+// Make table for each week
 function makeTable(inputDate, weekNum) {
-    const tableContainer = document.getElementById("finalTablesContainer"); //this will be the container of all tables
+    const tableContainer = document.getElementById("finalTablesContainer"); // this will be the container of all tables
     const currTable = document.createElement('table');
     const daysNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
+    // Generate the schedule for the week
+    const schedule = generateSchedule(inputDate);
+
     let currentDate = new Date(inputDate);
+
     const shifts = [' ', '9am - 5pm', 'HK', '1pm - 9pm', 'MID Shift', 'NOTES:', 'Janice', 'Chris'];
 
     for (let i = 0; i < shifts.length; i++) {
@@ -76,17 +175,19 @@ function makeTable(inputDate, weekNum) {
             const dayCell = document.createElement('td');
             if (i === 0) {
                 // Add the date to the first row (shift times) for each day
-                dayCell.textContent = `${daysNames[j]} ${currentDate.getDate()}`; 
+                dayCell.textContent = daysNames[j] + " " + currentDate.getDate(); 
                 dayCell.contentEditable = false;
             } else {
-                //Make cells editable on double click
-                dayCell.addEventListener('dblclick', function() {
-                    if (dayCell.contentEditable === "true") {
-                        dayCell.contentEditable = "false";  // Disable editing
-                    } else {
-                        dayCell.contentEditable = "true";   // Enable editing
-                    }
-                });
+                // Fill in the schedule with staff names for each shift
+                if (i === 1) {
+                    dayCell.textContent = schedule[j].day.join(", ");
+                    schedule[j].day.forEach(staffName => checkColor(dayCell, staffName));
+                } else if (i === 3) {
+                    dayCell.textContent = schedule[j].night.join(", ");
+                    schedule[j].night.forEach(staffName => checkColor(dayCell, staffName));
+                }
+                dayCell.textContent = null;
+                //dayCell.contentEditable = true; bc this should be something which is in edit mode 
             }
             if (i == 1 || i ==3) {
                 dayCell.type = 'color-cell';
@@ -100,38 +201,60 @@ function makeTable(inputDate, weekNum) {
         }
         currTable.appendChild(row);
     }
+
     // Append the table to the container
     const weekTitle = document.createElement('h2');
     weekTitle.textContent = `Week ${weekNum}`;
     tableContainer.appendChild(weekTitle);
     tableContainer.appendChild(currTable);
-
-    // Trigger randomize schedule for each new table generated
-    //randomizeSchedule(weekTable); //NEED TO ADD THIS
 }
 
-let isEditMode = false; // Track if edit mode is active
-let wantedColor = 'white'; // Default color
-let hkcolor = '#rgb(243, 243, 97)'; //#f3f361
+function overTwoDaysOff() {
+    let offDayMap = new Map();
+    let returnVal = false;
+    const form = document.getElementById('staffInput'); 
+    const inputs = form.querySelectorAll('input'); 
+
+    inputs.forEach(input => {
+        let currDayOff = Number(input.value);
+        if (!offDayMap.has(currDayOff)) {
+           offDayMap.set(currDayOff, 1); 
+        } else {
+            let prevNum = Number(offDayMap.get(currDayOff));
+            if (prevNum == 2 && currDayOff != 0) {
+                alert(`dont have enough people for day ${currDayOff}`);
+                returnVal = true;
+                return true;
+            } else {
+                offDayMap.set(currDayOff, prevNum + 1);
+            }
+        }
+    });
+    return returnVal;
+}
 
 
-//idea: all the stuff for when we click on the generate schedule button
-document.getElementById("generateScheduleButton").addEventListener("click", function() {
+
+// Trigger schedule generation on button click
+document.getElementById("generateScheduleButton").addEventListener("click", function () {
     const startDateInput = document.getElementById('startDate').value;
     const numWeeks = document.getElementById('numWeeks').value;
+    if (overTwoDaysOff()) return;
 
+    if ((startDateInput.length > 5 && startDateInput[startDateInput.length - 1] != " ") || Number(numWeeks) > 12 || Number(numWeeks) < 1) {
+        alert("Please check your fomat for start date and the number of weeks.");
+        return;
+    }
     if (!startDateInput || !numWeeks) {
         alert("Please enter both the start date and the number of weeks.");
         return;
     }
-
     // Parse the start date input into MM/DD format
     const startDateArr = startDateInput.trim().split(" ");
     const month = parseInt(startDateArr[0], 10) - 1; // Month is 0-indexed
     const day = parseInt(startDateArr[1], 10);
 
     // Create a JavaScript Date object for the start date
-
     const year = new Date().getFullYear();
     let startDate = new Date(year, month, day);
     startDate = startOfWeekDate(startDate);
@@ -146,32 +269,66 @@ document.getElementById("generateScheduleButton").addEventListener("click", func
         makeTable(weekStartDate, i + 1);
     }
 });
- 
-    // Event listener for the "Edit Schedule" button
-    document.getElementById("editScheduleButton").addEventListener('click', function() {
-        isEditMode = !isEditMode;
 
-        if (isEditMode) {  
-            // Grabs staffs colors from table on click in order to transfer to the finalTable
-            document.getElementById('staffTable').addEventListener('click', function(event) {
-                wantedColor = event.target.style.backgroundColor; // Get the background color 
-            });
-            // Listen for clicks on the final tables container to apply the selected color
-            document.getElementById('finalTablesContainer').addEventListener('click', function(event) {
-                let clickedCell = event.target;
-                // Only proceed if the clicked element is a <td> and has the class 'color-cell'
-                //console.log(clickedCell.type);
-                if (clickedCell.type == 'color-cell') {
-                    // Apply the selected color to the clicked cell
-                    clickedCell.style.backgroundColor = wantedColor;
-                } else if (clickedCell.type == 'hk-cell') {
-                    const currentColor = window.getComputedStyle(clickedCell).backgroundColor;
-                    if (currentColor === 'rgb(243, 243, 97)') {
-                        clickedCell.style.backgroundColor = 'white';
-                    } else {
-                        clickedCell.style.backgroundColor = '#f3f361';
-                    }
-                }
-            });
+let isToggleOn = document.getElementById("toggleButton");
+let staffTableClickListener;
+let finalTablesClickListener;
+let finalTablesClickListenerForWriting;
+let isEditMode = false; // Track if edit mode is active
+//let hkcolor = '#rgb(243, 243, 97)'; //#f3f361
+let wantedColor = ''; // Default color
+
+isToggleOn.addEventListener('change', function() {
+    document.getElementById("staffTable").removeEventListener('click', staffTableClickListener);
+    document.getElementById("finalTablesContainer").removeEventListener('click', finalTablesClickListener);
+    isEditMode = isToggleOn.checked;
+    staffTableClickListener = function(event) {
+        if (!isEditMode) return;
+        wantedColor = event.target.style.backgroundColor; // Get the background color 
+        nameRelatingToTheColor = colorMap.get(wantedColor)
+        document.getElementById("selected-color-text").textContent = `Selected Color: ${nameRelatingToTheColor}`;
+    };
+    finalTablesClickListener = function(event) {
+        if (!isEditMode) return;
+        let clickedCell = event.target;
+        if (clickedCell.type == 'color-cell' && wantedColor != '') {
+            clickedCell.style.backgroundColor = wantedColor;
+            console.log("test");
+        } else if (clickedCell.type == 'hk-cell') {
+            let hkcolor = '#rgb(243, 243, 97)'; //#f3f361
+            if (clickedCell.style.backgroundColor === "rgb(243, 243, 97)") {
+                hkcolor = "white";
+            } else {
+                hkcolor = "rgb(243, 243, 97)";
+            }
+            console.log("changed");
+            clickedCell.style.backgroundColor = hkcolor;
         }
-    });
+    };
+    function disableEditing() {
+        const cells = document.querySelectorAll('#finalTablesContainer td');
+        const cellsToEdit = Array.from(cells).slice(8);
+        //filtered = cellsToEdit.filter((_, index) => index % 8 !== 0);
+        cellsToEdit.forEach(cell => {
+            cell.contentEditable = false; // Disable content editing
+        });
+    }
+    // Function to enable content editing on all cells
+    function enableEditing() {
+        const cells = document.querySelectorAll('#finalTablesContainer td');
+        const cellsToEdit = Array.from(cells).slice(8);
+        cellsToEdit.forEach(cell => {
+            cell.contentEditable = true; // Enable content editing
+        });
+    }
+
+    if (isEditMode) {
+        document.getElementById('staffTable').addEventListener('click', staffTableClickListener);
+        document.getElementById('finalTablesContainer').addEventListener('click', finalTablesClickListener);
+        enableEditing();
+    } else {
+        // document.getElementById("staffTable").removeEventListener('click', staffTableClickListener);
+        // document.getElementById("finalTablesContainer").removeEventListener('click', finalTablesClickListener);
+        //moved it to the top to ensure that any event listeners which were added before would be removed
+        disableEditing();
+    }})
